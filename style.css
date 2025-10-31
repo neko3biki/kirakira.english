@@ -1,0 +1,173 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-image: url('background.png'); /* お好みの背景画像に！ */
+    background-size: cover;
+    background-position: center;
+    color: #333;
+    overflow: hidden; /* キラキラエフェクトがはみ出さないように */
+}
+
+.game-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 800px;
+    width: 90%;
+    position: relative; /* キャラクターを相対的に配置するために必要 */
+    overflow: visible; /* キャラクターがはみ出しても見えるように */
+}
+
+h1 {
+    color: #4CAF50;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* キャラクター関連のスタイル */
+.character-area {
+    position: absolute; /* ゲームボードに対して絶対位置に配置 */
+    top: 10px; /* game-containerの上にはみ出すように調整 */
+    left: 97%;
+    transform: translateX(-50%); /* 中央寄せ */
+    z-index: 10; /* 他の要素より手前に表示 */
+}
+
+#owl-character {
+    width: 150px; /* キャラクターの幅を調整 */
+    height: auto;
+    transition: transform 0.2s ease-out; /* 変形のスムーズなアニメーション */
+}
+
+/* 喜びのアニメーション */
+#owl-character.happy-animation {
+    animation: bounce 0.6s ease-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0) translateX(-50%); }
+    50% { transform: translateY(-15px) translateX(-50%); } /* 少し上に跳ねる */
+}
+
+/* 困ったアニメーション（首をかしげる） */
+#owl-character.confused-animation {
+    animation: head-tilt 0.8s ease-in-out infinite alternate; /* 左右に無限に揺れる */
+}
+
+@keyframes head-tilt {
+    0% { transform: rotate(0deg) translateX(-50%); }
+    50% { transform: rotate(-5deg) translateX(-50%); } /* 少し左に傾く */
+    100% { transform: rotate(5deg) translateX(-50%); } /* 少し右に傾く */
+}
+
+
+#game-board {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 100px; /* キャラクターの表示スペースを確保 */
+    margin-bottom: 30px;
+}
+
+#english-words, #japanese-words {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 45%;
+}
+
+.word-card {
+    background-color: #f0f0f0;
+    padding: 15px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5em;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    color: #555;
+}
+
+.word-card:hover:not(.matched):not(.selected) {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.word-card.selected {
+    border-color: #FFD700; /* 選択時の色 */
+    background-color: #FFFACD;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.word-card.matched {
+    background-color: #A5D6A7; /* マッチした時の色 */
+    color: #388E3C;
+    cursor: default;
+    box-shadow: none;
+    border-color: #81C784;
+}
+
+#message {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #E65100;
+    margin-top: 20px;
+    min-height: 1.5em; /* メッセージ表示領域を確保 */
+}
+
+#reset-button {
+    background-color: #FF6F00;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 20px;
+}
+
+#reset-button:hover {
+    background-color: #E65100;
+}
+
+/* キラキラエフェクトのスタイル */
+.sparkle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* クリックを妨げない */
+    z-index: 100; /* 最前面に表示 */
+}
+
+.sparkle {
+    position: absolute;
+    background-color: gold;
+    border-radius: 50%;
+    opacity: 0;
+    animation: sparkle-fade 1s forwards;
+    pointer-events: none; /* クリックを妨げない */
+    transform-origin: center center;
+}
+
+@keyframes sparkle-fade {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+        filter: brightness(2);
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+        filter: brightness(1);
+    }
+}

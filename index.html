@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キラキラ英単語マッチングゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>キラキラ英単語マッチングゲーム</h1>
+        
+        <div class="character-area">
+            <img id="owl-character" src="owl_normal.png" alt="フワフワフクロウのホーホー">
+        </div>
+
+        <div id="game-board">
+            <div id="english-words"></div>
+            <div id="japanese-words"></div>
+        </div>
+        <button id="reset-button" style="display: none;">もう一度プレイ</button>
+        <p id="message"></p>
+    </div>
+
+    <!-- 正解時のキラキラエフェクト -->
+    <div class="sparkle-container"></div>
+
+    <!-- 効果音ファイルは必要に応じて用意してください -->
+    <audio id="correct-sound" src="correct.mp3" preload="auto"></audio>
+    <audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
