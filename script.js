@@ -1,22 +1,60 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ここで英単語と日本語訳のペアを設定します。
+    // --- 英単語と日本語訳のペアを設定します (24単語) ---
     // この配列の中身を編集するだけで、ゲームの単語を簡単に変更できます。
-    const wordPairs = [
+    const allWordPairs = [
         { english: "apple", japanese: "りんご" },
         { english: "cat", japanese: "ねこ" },
         { english: "dog", japanese: "いぬ" },
         { english: "book", japanese: "本" },
         { english: "sun", japanese: "太陽" },
+        { english: "moon", japanese: "月" }, // Level 1 (6単語)
+
+        { english: "bird", japanese: "鳥" },
+        { english: "fish", japanese: "魚" },
+        { english: "car", japanese: "車" },
+        { english: "tree", japanese: "木" },
+        { english: "flower", japanese: "花" },
+        { english: "water", japanese: "水" }, // Level 2 (6単語)
+
+        { english: "house", japanese: "家" },
+        { english: "table", japanese: "テーブル" },
+        { english: "chair", japanese: "いす" },
+        { english: "pen", japanese: "ペン" },
+        { english: "pencil", japanese: "鉛筆" },
+        { english: "bag", japanese: "カバン" }, // Level 3 (6単語)
+
+        { english: "happy", japanese: "嬉しい" },
+        { english: "sad", japanese: "悲しい" },
+        { english: "big", japanese: "大きい" },
+        { english: "small", japanese: "小さい" },
+        { english: "red", japanese: "赤" },
+        { english: "blue", japanese: "青" }, // Level 4 (6単語)
     ];
 
-    // --- 音声合成機能の追加 ---
-    const synth = window.speechSynthesis; // 音声合成APIのインスタンス
-    let englishVoice = null; // 英語の声を格納する変数
+    const wordsPerLevel = 6;
+    let currentLevel = 0; // 現在のレベル (0からスタート)
+    let currentLevelPairs = []; // 現在のレベルで使う単語ペア
 
-    // 利用可能な音声が読み込まれたら、英語の音声を探して設定
+    // --- フクロウの進化画像を設定 (配列のインデックスがレベルに対応) ---
+    // ここに進化後のフクロウの画像ファイル名を順に追加してください
+    // 例: owl_normal.png -> owl_evolution1.png -> owl_evolution2.png -> owl_final.png
+    const owlEvolutionImages = [
+        'owl_normal.png',       // Level 0 (初期状態)
+        'owl_evolution1.png',   // Level 1 クリア後
+        'owl_evolution2.png',   // Level 2 クリア後
+        'owl_evolution3.png',   // Level 3 クリア後
+        'owl_final.png'         // Level 4 (全クリア後)
+    ];
+    // これらの画像ファイルも用意して、index.htmlと同じフォルダに入れてください。
+    // 例として、owl_evolution1.png、owl_evolution2.png、owl_evolution3.png、owl_final.png を用意する必要があります。
+
+
+    // --- 音声合成機能の追加 ---
+    const synth = window.speechSynthesis;
+    let englishVoice = null;
+
     synth.onvoiceschanged = () => {
         const voices = synth.getVoices();
-        // より自然な英語の音声を探す（'en-US'や'en-GB'など、環境によって利用可能な音声は異なります）
         englishVoice = voices.find(voice => 
             voice.lang === 'en-US' || 
             voice.lang === 'en-GB' || 
@@ -37,35 +75,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const correctSound = document.getElementById('correct-sound');
     const wrongSound = document.getElementById('wrong-sound');
 
-    // --- キャラクター関連の追加 ---
-    const owlCharacter = document.getElementById('owl-character'); // フクロウの画像要素を取得
+    const owlCharacter = document.getElementById('owl-character'); 
+
+    // レベル表示要素も追加
+    const levelDisplay = document.createElement('p');
+    levelDisplay.id = 'level-display';
+    levelDisplay.style.fontSize = '1.2em';
+    levelDisplay.style.fontWeight = 'bold';
+    levelDisplay.style.color = '#00796B';
+    messageDisplay.parentNode.insertBefore(levelDisplay, messageDisplay); // メッセージの上に挿入
 
     // キャラクターの状態をリセットする関数
     function resetOwlCharacter() {
-        owlCharacter.src = 'owl_normal.png'; // 通常の画像に戻す
-        owlCharacter.classList.remove('happy-animation', 'confused-animation'); // アニメーションクラスを削除
-        owlCharacter.removeEventListener('animationend', resetOwlCharacterForHappy); // 念のためイベントリスナーも削除
+        owlCharacter.src = owlEvolutionImages[currentLevel]; // 現在のレベルに応じたフクロウ画像
+        owlCharacter.classList.remove('happy-animation', 'confused-animation');
+        owlCharacter.removeEventListener('animationend', resetOwlCharacterForHappy);
     }
 
     // 正解時のキャラクターアクション (アニメーション終了時にリセット)
     function animateOwlHappy() {
-        owlCharacter.src = 'owl_happy.png';
+        owlCharacter.src = 'owl_happy.png'; // 嬉しい顔は共通
         owlCharacter.classList.add('happy-animation');
-        // アニメーション終了後に通常状態に戻すためのイベントリスナー
         owlCharacter.addEventListener('animationend', resetOwlCharacterForHappy, { once: true });
     }
 
-    // happy-animationが終了した時に呼ばれる専用のハンドラ
     function resetOwlCharacterForHappy() {
-        resetOwlCharacter();
+        resetOwlCharacter(); // 通常のレベル画像に戻る
     }
 
     // 不正解時のキャラクターアクション
     function animateOwlConfused() {
-        owlCharacter.src = 'owl_confused.png';
+        owlCharacter.src = 'owl_confused.png'; // 困った顔は共通
         owlCharacter.classList.add('confused-animation');
     }
-    // --- キャラクター関連の追加終わり ---
 
     let selectedEnglishCard = null;
     let selectedJapaneseCard = null;
@@ -82,13 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.classList.add('word-card');
         card.textContent = word;
-        card.dataset.word = word; // マッチングのために元の単語を保持
-        card.dataset.type = type; // english or japanese
+        card.dataset.word = word;
+        card.dataset.type = type;
         
         card.addEventListener('click', () => {
-            handleCardClick(card); // 既存のカードクリック処理を呼び出し
+            handleCardClick(card);
 
-            if (type === 'english') { // 英単語カードがクリックされた場合のみ発音
+            if (type === 'english') {
                 speakEnglishWord(word);
             }
         });
@@ -104,12 +146,28 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedJapaneseCard = null;
         matchedCount = 0;
         
-        resetOwlCharacter(); // ゲーム開始時にもキャラクターをリセット
+        // 現在のレベルに応じた単語セットを抽出
+        const startIndex = currentLevel * wordsPerLevel;
+        currentLevelPairs = allWordPairs.slice(startIndex, startIndex + wordsPerLevel);
 
-        const shuffledEnglishWords = [...wordPairs.map(p => p.english)];
+        if (currentLevelPairs.length === 0) {
+            // 全レベルクリア後の処理
+            messageDisplay.textContent = '全レベルクリア！おめでとう！';
+            levelDisplay.textContent = '最終レベル！';
+            owlCharacter.src = owlEvolutionImages[owlEvolutionImages.length - 1]; // 最終進化フクロウ
+            resetButton.textContent = '最初からやり直す';
+            resetButton.style.display = 'block';
+            currentLevel = -1; // リセットボタンで最初に戻るためのフラグ
+            return;
+        }
+
+        resetOwlCharacter(); // 現在のレベルのフクロウ画像を表示
+        levelDisplay.textContent = `レベル ${currentLevel + 1}`;
+
+        const shuffledEnglishWords = [...currentLevelPairs.map(p => p.english)];
         shuffleArray(shuffledEnglishWords);
 
-        const shuffledJapaneseWords = [...wordPairs.map(p => p.japanese)];
+        const shuffledJapaneseWords = [...currentLevelPairs.map(p => p.japanese)];
         shuffleArray(shuffledJapaneseWords);
 
         shuffledEnglishWords.forEach(word => {
@@ -122,18 +180,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleCardClick(card) {
-        if (card.classList.contains('matched')) return; // すでにマッチ済みのカードは無視
+        if (card.classList.contains('matched')) return;
 
-        // 既に選択されている同じタイプのカードがあれば、選択を解除
         if (card.dataset.type === 'english' && selectedEnglishCard && selectedEnglishCard !== card) {
             selectedEnglishCard.classList.remove('selected');
-            selectedEnglishCard = null; // 一度クリア
+            selectedEnglishCard = null;
         } else if (card.dataset.type === 'japanese' && selectedJapaneseCard && selectedJapaneseCard !== card) {
             selectedJapaneseCard.classList.remove('selected');
-            selectedJapaneseCard = null; // 一度クリア
+            selectedJapaneseCard = null;
         }
 
-        card.classList.toggle('selected'); // 選択状態を切り替える
+        card.classList.toggle('selected');
 
         if (card.dataset.type === 'english') {
             selectedEnglishCard = card.classList.contains('selected') ? card : null;
@@ -149,23 +206,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const englishWord = selectedEnglishCard.dataset.word;
             const japaneseWord = selectedJapaneseCard.dataset.word;
 
-            const isMatch = wordPairs.some(pair => 
+            const isMatch = currentLevelPairs.some(pair => 
                 pair.english === englishWord && pair.japanese === japaneseWord
             );
 
             if (isMatch) {
-                // 正解！
                 correctSound.play();
                 messageDisplay.textContent = 'やったね！せいかい！';
                 
-                animateOwlHappy(); // 正解時にフクロウを嬉しそうにアニメーション
+                animateOwlHappy();
 
                 selectedEnglishCard.classList.add('matched');
                 selectedJapaneseCard.classList.add('matched');
                 selectedEnglishCard.classList.remove('selected');
                 selectedJapaneseCard.classList.remove('selected');
 
-                // キラキラエフェクト
                 createSparkleEffect(selectedEnglishCard);
                 createSparkleEffect(selectedJapaneseCard);
 
@@ -173,27 +228,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedJapaneseCard = null;
                 matchedCount++;
 
-                if (matchedCount === wordPairs.length) {
-                    messageDisplay.textContent = 'おめでとう！全部クリアしたよ！';
+                if (matchedCount === currentLevelPairs.length) {
+                    // 現在のレベルをクリア！
+                    messageDisplay.textContent = `レベル ${currentLevel + 1} クリア！`;
+                    resetButton.textContent = '次のレベルへ';
                     resetButton.style.display = 'block';
-                    // 全クリア時もフクロウは嬉しいまま
+                    
+                    currentLevel++; // レベルアップ！
+                    // フクロウの進化画像を設定（次のレベルの画像）
+                    if (currentLevel < owlEvolutionImages.length) {
+                        owlCharacter.src = owlEvolutionImages[currentLevel];
+                    } else { // 全レベルクリア後
+                        owlCharacter.src = owlEvolutionImages[owlEvolutionImages.length - 1];
+                    }
+
+                    // resetボタンで次のレベルに進むので、ここではresetOwlCharacterは呼ばない
                 }
             } else {
-                // 不正解...
                 wrongSound.play();
                 messageDisplay.textContent = 'あれれ？ちがうみたいだよ。';
                 
-                animateOwlConfused(); // 不正解時にフクロウを困った顔にアニメーション
+                animateOwlConfused();
 
-                // 少し時間をおいて選択解除
                 setTimeout(() => {
                     selectedEnglishCard.classList.remove('selected');
                     selectedJapaneseCard.classList.remove('selected');
                     selectedEnglishCard = null;
                     selectedJapaneseCard = null;
-                    messageDisplay.textContent = ''; // メッセージをクリア
+                    messageDisplay.textContent = '';
                     // 全クリア時以外はキャラクターを通常状態に戻す
-                    if (matchedCount !== wordPairs.length) { 
+                    if (matchedCount !== currentLevelPairs.length) { 
                        resetOwlCharacter(); 
                     }
                 }, 800);
@@ -206,14 +270,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = rect.left + rect.width / 2;
         const startY = rect.top + rect.height / 2;
 
-        for (let i = 0; i < 10; i++) { // 10個のキラキラを生成
+        for (let i = 0; i < 10; i++) {
             const sparkle = document.createElement('div');
             sparkle.classList.add('sparkle');
-            const size = Math.random() * 8 + 4; // 4pxから12px
+            const size = Math.random() * 8 + 4;
             sparkle.style.width = `${size}px`;
             sparkle.style.height = `${size}px`;
 
-            // カードの中心から少し散らばるように調整
             const offsetX = (Math.random() - 0.5) * rect.width * 0.8;
             const offsetY = (Math.random() - 0.5) * rect.height * 0.8;
 
@@ -222,16 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             sparkleContainer.appendChild(sparkle);
 
-            // アニメーション終了後に要素を削除
             sparkle.addEventListener('animationend', () => {
                 sparkle.remove();
             });
         }
     }
 
-    // --- 新規追加した音声再生関数 ---
     function speakEnglishWord(word) {
-        if (synth.speaking) { // すでに何か話している場合は中断
+        if (synth.speaking) {
             synth.cancel();
         }
 
@@ -239,17 +300,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (englishVoice) {
             utterance.voice = englishVoice;
         } else {
-            utterance.lang = 'en-US'; // 英語の音声が見つからない場合のフォールバック
+            utterance.lang = 'en-US';
         }
-        utterance.rate = 0.9; // 少しゆっくりめに話す（必要に応じて調整）
-        utterance.pitch = 1; // ピッチ（声の高さ）
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
         
         synth.speak(utterance);
     }
-    // --- 音声再生関数終わり ---
 
-
-    resetButton.addEventListener('click', generateGame);
+    resetButton.addEventListener('click', () => {
+        if (currentLevel === -1) { // 全レベルクリア後の「最初からやり直す」ボタン
+            currentLevel = 0;
+            resetButton.textContent = 'もう一度プレイ'; // デフォルトに戻す
+        }
+        generateGame();
+    });
 
     // ゲーム開始
     generateGame();
