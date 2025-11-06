@@ -2,48 +2,55 @@ body {
     font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    align-items: flex-start; /* 変更: center -> flex-start (画面上部から配置) */
+    min-height: 100vh; /* 変更: flex-start にしても画面全体に背景が広がるように */
     margin: 0;
-    background-image: url('background.png'); /* お好みの背景画像に！ */
+    padding: 20px; /* 全体の余白を追加 (スマホなどで端が切れにくいように) */
+    box-sizing: border-box; /* paddingを含めて要素の幅を計算 */
+    background-image: url('background.png');
     background-size: cover;
     background-position: center;
     color: #333;
-    overflow: hidden; /* キラキラエフェクトがはみ出さないように */
+    overflow-y: auto; /* 変更: 縦方向にスクロールできるように */
+    overflow-x: hidden; /* 横方向はスクロールさせない */
 }
 
 .game-container {
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 30px 40px;
+    padding: 20px 20px; /* 変更: パディングを少し減らす */
     border-radius: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    max-width: 800px;
-    width: 90%;
-    position: relative; /* キャラクターを相対的に配置するために必要 */
-    overflow: visible; /* キャラクターがはみ出しても見えるように */
+    max-width: 600px; /* 変更: 最大幅を少し狭くしてスマホでも見やすく */
+    width: 100%; /* 変更: 常に親要素の幅いっぱいに広がる */
+    position: relative;
+    overflow: hidden; /* キャラクターのはみ出しはコンテナ内で隠す */
+    margin-top: 20px; /* 上部に少し余白 */
+    margin-bottom: 20px; /* 下部に少し余白 */
 }
 
 h1 {
     color: #4CAF50;
-    margin-bottom: 30px;
-    font-size: 2.5em;
+    margin-bottom: 20px; /* 変更: マージンを少し減らす */
+    font-size: 2em; /* 変更: フォントサイズを小さくして、スマホでも見やすく */
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 /* キャラクター関連のスタイル */
 .character-area {
-    position: absolute; /* ゲームボードに対して絶対位置に配置 */
-    top: 10px; /* game-containerの上にはみ出すように調整 */
-    left: 97%;
-    transform: translateX(-50%); /* 中央寄せ */
-    z-index: 10; /* 他の要素より手前に表示 */
+    position: absolute;
+    /* top: -80px;  一旦コメントアウトまたは削除。下で調整 */
+    top: 5px; /* 変更: ゲームコンテナの上端からの距離を調整 */
+    right: 10px; /* 変更: 右端に寄せる */
+    left: auto; /* leftの指定を解除 */
+    transform: none; /* transformも解除 (rightとtopで直接位置指定) */
+    z-index: 10;
 }
 
 #owl-character {
-    width: 150px; /* キャラクターの幅を調整 */
+    width: 100px; /* 変更: キャラクターの幅を小さくしてスペースを確保 */
     height: auto;
-    transition: transform 0.2s ease-out; /* 変形のスムーズなアニメーション */
+    transition: transform 0.2s ease-out;
 }
 
 /* 喜びのアニメーション */
@@ -52,122 +59,92 @@ h1 {
 }
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0) translateX(-50%); }
-    50% { transform: translateY(-15px) translateX(-50%); } /* 少し上に跳ねる */
+    0%, 100% { transform: translateY(0); } /* transform: translateX(-50%)を削除 */
+    50% { transform: translateY(-15px); }
 }
 
 /* 困ったアニメーション（首をかしげる） */
 #owl-character.confused-animation {
-    animation: head-tilt 0.8s ease-in-out infinite alternate; /* 左右に無限に揺れる */
+    animation: head-tilt 0.8s ease-in-out infinite alternate;
 }
 
 @keyframes head-tilt {
-    0% { transform: rotate(0deg) translateX(-50%); }
-    50% { transform: rotate(-5deg) translateX(-50%); } /* 少し左に傾く */
-    100% { transform: rotate(5deg) translateX(-50%); } /* 少し右に傾く */
+    0% { transform: rotate(0deg); } /* transform: translateX(-50%)を削除 */
+    50% { transform: rotate(-5deg); }
+    100% { transform: rotate(5deg); }
 }
 
 
 #game-board {
     display: flex;
-    justify-content: space-around;
-    margin-top: 100px; /* キャラクターの表示スペースを確保 */
+    flex-direction: column; /* 変更: 縦並びにして、スマホでカードが横にはみ出さないように */
+    gap: 15px; /* 変更: ギャップは維持 */
+    margin-top: 80px; /* 変更: キャラクターの下にゲームボードが来るように */
     margin-bottom: 30px;
 }
 
 #english-words, #japanese-words {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 45%;
+    flex-direction: row; /* 変更: カードは横並びに変更 */
+    flex-wrap: wrap; /* 変更: 画面幅が足りなくなったら折り返す */
+    justify-content: center; /* 変更: 中央寄せ */
+    gap: 10px; /* 変更: カード間のギャップを調整 */
+    width: 100%; /* 変更: 左右の幅を100%に */
 }
 
 .word-card {
     background-color: #f0f0f0;
-    padding: 15px 20px;
-    border-radius: 10px;
+    padding: 12px 15px; /* 変更: パディングを小さく */
+    border-radius: 8px; /* 変更: 角丸を小さく */
     cursor: pointer;
-    font-size: 1.5em;
+    font-size: 1.2em; /* 変更: フォントサイズを小さく */
     font-weight: bold;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); /* 変更: 影を小さく */
     border: 2px solid transparent;
     color: #555;
-}
-
-.word-card:hover:not(.matched):not(.selected) {
-    background-color: #e0e0e0;
-    transform: translateY(-2px);
+    flex: 0 0 auto; /* 変更: カードの幅はコンテンツに合わせ、縮小・拡大しない */
+    min-width: 100px; /* 変更: 最小幅を設定して、小さくなりすぎないように */
 }
 
 .word-card.selected {
-    border-color: #FFD700; /* 選択時の色 */
+    border-color: #FFD700;
     background-color: #FFFACD;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-}
-
-.word-card.matched {
-    background-color: #A5D6A7; /* マッチした時の色 */
-    color: #388E3C;
-    cursor: default;
-    box-shadow: none;
-    border-color: #81C784;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* 変更: 影を小さく */
 }
 
 #message {
-    font-size: 1.8em;
+    font-size: 1.4em; /* 変更: フォントサイズを小さく */
     font-weight: bold;
     color: #E65100;
     margin-top: 20px;
-    min-height: 1.5em; /* メッセージ表示領域を確保 */
+    min-height: 1.5em;
 }
 
 #reset-button {
-    background-color: #FF6F00;
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 20px;
+    padding: 10px 20px; /* 変更: パディングを小さく */
+    border-radius: 6px; /* 変更: 角丸を小さく */
+    font-size: 1.1em; /* 変更: フォントサイズを小さく */
 }
 
-#reset-button:hover {
-    background-color: #E65100;
-}
 
-/* キラキラエフェクトのスタイル */
-.sparkle-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* クリックを妨げない */
-    z-index: 100; /* 最前面に表示 */
-}
-
-.sparkle {
-    position: absolute;
-    background-color: gold;
-    border-radius: 50%;
-    opacity: 0;
-    animation: sparkle-fade 1s forwards;
-    pointer-events: none; /* クリックを妨げない */
-    transform-origin: center center;
-}
-
-@keyframes sparkle-fade {
-    0% {
-        transform: scale(0.5);
-        opacity: 1;
-        filter: brightness(2);
+/* --- スマートフォン向けの追加スタイル (メディアクエリ) --- */
+@media (max-width: 600px) { /* 画面幅が600px以下の場合に適用 */
+    h1 {
+        font-size: 1.8em;
     }
-    100% {
-        transform: scale(2);
-        opacity: 0;
-        filter: brightness(1);
+
+    #owl-character {
+        width: 80px; /* スマホではフクロウをさらに小さく */
+    }
+
+    .word-card {
+        font-size: 1.1em;
+        padding: 10px 12px;
+        min-width: 80px; /* スマホでの最小幅 */
+    }
+
+    #message {
+        font-size: 1.2em;
     }
 }
