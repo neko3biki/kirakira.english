@@ -77,19 +77,40 @@ h1 {
 
 #game-board {
     display: flex;
-    flex-direction: column; /* 変更: 縦並びにして、スマホでカードが横にはみ出さないように */
-    gap: 15px; /* 変更: ギャップは維持 */
-    margin-top: 80px; /* 変更: キャラクターの下にゲームボードが来るように */
+    justify-content: space-around; /* 左右に配置 */
+    gap: 20px; /* 左右のセクション間のスペース */
+    margin-top: 80px;
     margin-bottom: 30px;
+    flex-wrap: wrap; /* 画面が狭いときに折り返す */
 }
 
 #english-words, #japanese-words {
     display: flex;
-    flex-direction: row; /* 変更: カードは横並びに変更 */
-    flex-wrap: wrap; /* 変更: 画面幅が足りなくなったら折り返す */
-    justify-content: center; /* 変更: 中央寄せ */
-    gap: 10px; /* 変更: カード間のギャップを調整 */
-    width: 100%; /* 変更: 左右の幅を100%に */
+    flex-direction: column; /* 各カードを縦並びに */
+    gap: 12px; /* カード間のスペース */
+    width: 48%; /* 左右のセクションの幅 */
+    min-width: 250px; /* 狭すぎないように最小幅を設定 */
+}
+
+.word-card {
+    /* ... 既存のスタイルはほぼ維持 ... */
+    flex: 1; /* セクション内で均等な高さに広がる */
+    min-width: auto; /* width: 48% と flex: 1 の組み合わせでうまくいくように調整 */
+    height: auto; /* 高さも自動調整 */
+}
+
+/* --- スマートフォン向けの追加スタイル (メディアクエリ) --- */
+@media (max-width: 600px) {
+    /* ... 既存のスマホ向けスタイルは維持 ... */
+
+    #game-board {
+        flex-direction: column; /* スマホでは縦並びに変更 */
+        align-items: center; /* 中央揃え */
+    }
+
+    #english-words, #japanese-words {
+        width: 90%; /* スマホでは幅を広めに使う */
+    }
 }
 
 .word-card {
@@ -148,3 +169,4 @@ h1 {
         font-size: 1.2em;
     }
 }
+
