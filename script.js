@@ -36,8 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLevelPairs = []; // 現在のレベルで使う単語ペア
 
     // --- フクロウの進化画像を設定 (配列のインデックスがレベルに対応) ---
-    // ここに進化後のフクロウの画像ファイル名を順に追加してください
-    // 例: owl_normal.png -> owl_evolution1.png -> owl_evolution2.png -> owl_final.png
     const owlEvolutionImages = [
         'owl_normal.png',       // Level 0 (初期状態)
         'owl_evolution1.png',   // Level 1 クリア後
@@ -46,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'owl_final.png'         // Level 4 (全クリア後)
     ];
     // これらの画像ファイルも用意して、index.htmlと同じフォルダに入れてください。
-    // 例として、owl_evolution1.png、owl_evolution2.png、owl_evolution3.png、owl_final.png を用意する必要があります。
 
 
     // --- 音声合成機能の追加 ---
@@ -87,14 +84,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // キャラクターの状態をリセットする関数
     function resetOwlCharacter() {
-        owlCharacter.src = owlEvolutionImages[currentLevel]; // 現在のレベルに応じたフクロウ画像
+        owlCharacter.src = owlEvolutionImages[currentLevel]; // 現在のレベルに応じたフクロウ画像を表示
         owlCharacter.classList.remove('happy-animation', 'confused-animation');
         owlCharacter.removeEventListener('animationend', resetOwlCharacterForHappy);
     }
 
     // 正解時のキャラクターアクション (アニメーション終了時にリセット)
     function animateOwlHappy() {
-        owlCharacter.src = 'owl_happy.png'; // 嬉しい顔は共通
+        owlCharacter.src = 'reaction_happy.png'; // <-- ここを修正: 顔のドアップ画像
         owlCharacter.classList.add('happy-animation');
         owlCharacter.addEventListener('animationend', resetOwlCharacterForHappy, { once: true });
     }
@@ -105,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 不正解時のキャラクターアクション
     function animateOwlConfused() {
-        owlCharacter.src = 'owl_confused.png'; // 困った顔は共通
+        owlCharacter.src = 'reaction_confused.png'; // <-- ここを修正: 顔のドアップ画像
         owlCharacter.classList.add('confused-animation');
     }
 
@@ -241,8 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else { // 全レベルクリア後
                         owlCharacter.src = owlEvolutionImages[owlEvolutionImages.length - 1];
                     }
-
-                    // resetボタンで次のレベルに進むので、ここではresetOwlCharacterは呼ばない
                 }
             } else {
                 wrongSound.play();
