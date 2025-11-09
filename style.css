@@ -2,53 +2,52 @@ body {
     font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* 変更: center -> flex-start (画面上部から配置) */
-    min-height: 100vh; /* 変更: flex-start にしても画面全体に背景が広がるように */
+    align-items: flex-start;
+    min-height: 100vh;
     margin: 0;
-    padding: 20px; /* 全体の余白を追加 (スマホなどで端が切れにくいように) */
-    box-sizing: border-box; /* paddingを含めて要素の幅を計算 */
+    padding: 20px;
+    box-sizing: border-box;
     background-image: url('background.png');
     background-size: cover;
     background-position: center;
     color: #333;
-    overflow-y: auto; /* 変更: 縦方向にスクロールできるように */
-    overflow-x: hidden; /* 横方向はスクロールさせない */
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .game-container {
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px 20px; /* 変更: パディングを少し減らす */
+    padding: 20px 20px;
     border-radius: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    max-width: 600px; /* 変更: 最大幅を少し狭くしてスマホでも見やすく */
-    width: 100%; /* 変更: 常に親要素の幅いっぱいに広がる */
+    max-width: 600px;
+    width: 100%;
     position: relative;
-    overflow: hidden; /* キャラクターのはみ出しはコンテナ内で隠す */
-    margin-top: 20px; /* 上部に少し余白 */
-    margin-bottom: 20px; /* 下部に少し余白 */
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 h1 {
     color: #4CAF50;
-    margin-bottom: 20px; /* 変更: マージンを少し減らす */
-    font-size: 2em; /* 変更: フォントサイズを小さくして、スマホでも見やすく */
+    margin-bottom: 20px;
+    font-size: 2em;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 /* キャラクター関連のスタイル */
 .character-area {
     position: absolute;
-    /* top: -80px;  一旦コメントアウトまたは削除。下で調整 */
-    top: 5px; /* 変更: ゲームコンテナの上端からの距離を調整 */
-    right: 10px; /* 変更: 右端に寄せる */
-    left: auto; /* leftの指定を解除 */
-    transform: none; /* transformも解除 (rightとtopで直接位置指定) */
+    top: 5px;
+    right: 10px;
+    left: auto;
+    transform: none;
     z-index: 10;
 }
 
 #owl-character {
-    width: 100px; /* 変更: キャラクターの幅を小さくしてスペースを確保 */
+    width: 100px; /* キャラクターの幅を調整 */
     height: auto;
     transition: transform 0.2s ease-out;
 }
@@ -59,7 +58,7 @@ h1 {
 }
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); } /* transform: translateX(-50%)を削除 */
+    0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-15px); }
 }
 
@@ -69,7 +68,7 @@ h1 {
 }
 
 @keyframes head-tilt {
-    0% { transform: rotate(0deg); } /* transform: translateX(-50%)を削除 */
+    0% { transform: rotate(0deg); }
     50% { transform: rotate(-5deg); }
     100% { transform: rotate(5deg); }
 }
@@ -93,15 +92,114 @@ h1 {
 }
 
 .word-card {
-    /* ... 既存のスタイルはほぼ維持 ... */
+    background-color: #f0f0f0;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    color: #555;
     flex: 1; /* セクション内で均等な高さに広がる */
-    min-width: auto; /* width: 48% と flex: 1 の組み合わせでうまくいくように調整 */
-    height: auto; /* 高さも自動調整 */
+    min-width: auto;
+    height: auto;
+}
+
+.word-card:hover:not(.matched):not(.selected) {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.word-card.selected {
+    border-color: #FFD700; /* 選択時の色 */
+    background-color: #FFFACD;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.word-card.matched {
+    background-color: #A5D6A7; /* マッチした時の色 */
+    color: #388E3C;
+    cursor: default;
+    box-shadow: none;
+    border-color: #81C784;
+}
+
+#message {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #E65100;
+    margin-top: 20px;
+    min-height: 1.5em;
+}
+
+#level-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #00796B;
+    margin-bottom: 10px; /* メッセージとの間に少しスペース */
+}
+
+#reset-button {
+    background-color: #FF6F00;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 20px;
+}
+
+#reset-button:hover {
+    background-color: #E65100;
+}
+
+/* キラキラエフェクトのスタイル */
+.sparkle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.sparkle {
+    position: absolute;
+    background-color: gold;
+    border-radius: 50%;
+    opacity: 0;
+    animation: sparkle-fade 1s forwards;
+    pointer-events: none;
+    transform-origin: center center;
+}
+
+@keyframes sparkle-fade {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+        filter: brightness(2);
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+        filter: brightness(1);
+    }
 }
 
 /* --- スマートフォン向けの追加スタイル (メディアクエリ) --- */
 @media (max-width: 600px) {
-    /* ... 既存のスマホ向けスタイルは維持 ... */
+    h1 {
+        font-size: 1.8em;
+    }
+
+    #owl-character {
+        width: 80px;
+    }
 
     #game-board {
         flex-direction: column; /* スマホでは縦並びに変更 */
@@ -110,53 +208,7 @@ h1 {
 
     #english-words, #japanese-words {
         width: 90%; /* スマホでは幅を広めに使う */
-    }
-}
-
-.word-card {
-    background-color: #f0f0f0;
-    padding: 12px 15px; /* 変更: パディングを小さく */
-    border-radius: 8px; /* 変更: 角丸を小さく */
-    cursor: pointer;
-    font-size: 1.2em; /* 変更: フォントサイズを小さく */
-    font-weight: bold;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); /* 変更: 影を小さく */
-    border: 2px solid transparent;
-    color: #555;
-    flex: 0 0 auto; /* 変更: カードの幅はコンテンツに合わせ、縮小・拡大しない */
-    min-width: 100px; /* 変更: 最小幅を設定して、小さくなりすぎないように */
-}
-
-.word-card.selected {
-    border-color: #FFD700;
-    background-color: #FFFACD;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* 変更: 影を小さく */
-}
-
-#message {
-    font-size: 1.4em; /* 変更: フォントサイズを小さく */
-    font-weight: bold;
-    color: #E65100;
-    margin-top: 20px;
-    min-height: 1.5em;
-}
-
-#reset-button {
-    padding: 10px 20px; /* 変更: パディングを小さく */
-    border-radius: 6px; /* 変更: 角丸を小さく */
-    font-size: 1.1em; /* 変更: フォントサイズを小さく */
-}
-
-
-/* --- スマートフォン向けの追加スタイル (メディアクエリ) --- */
-@media (max-width: 600px) { /* 画面幅が600px以下の場合に適用 */
-    h1 {
-        font-size: 1.8em;
-    }
-
-    #owl-character {
-        width: 80px; /* スマホではフクロウをさらに小さく */
+        min-width: 200px; /* スマホでの最小幅 */
     }
 
     .word-card {
@@ -168,5 +220,8 @@ h1 {
     #message {
         font-size: 1.2em;
     }
-}
 
+    #level-display {
+        font-size: 1em;
+    }
+}
